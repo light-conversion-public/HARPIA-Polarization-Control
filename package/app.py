@@ -56,6 +56,7 @@ mb = MotorBoard(settings['can_id'], HarpiaCanSender(harpia))
 
 diag_unit = PolarizationDiagnosticsUnit(mb, settings['motor_index'], settings['reduction'], settings.get("speed") or 10000, r'package/Sanyo Denki SH2281-5631 (rotary).json', settings.get("zero_angle") or 0.0)
 
+init_par = settings.get("initial_berek_angles") or (140.0, 90.0)
 
 def get_intensity():
     return np.abs(np.average(harpia._get('Basic/RawSignal')[settings['signal']]))
@@ -205,6 +206,8 @@ class Worker(QObject):
     def set_lp(self):
         self.is_running = True
 
+        go_to(init_par)
+
         diag_unit.set_angle(self.target_lp_angle)
         diag_unit.wait_until_stopped()
         hooke_jeeves(fun_linear, [harpia.berek_rotator_actual_rotate_angle(), harpia.berek_rotator_actual_tilt_angle()], delta = 7.0, step_min = 0.125)
@@ -215,6 +218,9 @@ class Worker(QObject):
     ## FOR CIRCULAR
     def set_cp(self):
         self.is_running = True
+
+        go_to(init_par)
+        time.sleep(2)
 
         hooke_jeeves(fun_circular, [harpia.berek_rotator_actual_rotate_angle(), harpia.berek_rotator_actual_tilt_angle()], delta = 7.0, step_min = 0.125)
 
