@@ -64,13 +64,12 @@ class MotorBoard:
             status = parse_int_from_response(self.get_register(self.reg_dict['Status'][1], motor_index))
             
             stopped = ((status >> 5) & 0x03) == 0                        
-            
-            print ('position', parse_int_from_response(self.get_register(self.reg_dict['AbsPos'][1], motor_index)))
 
             time.sleep(0.05)
+
     def set_register(self, registerAddress, index = 0, value = 0):
         if type(value) == float:
-            data4bytes = lcan.float_to_hex(value)
+            data4bytes = self.lcan.float_to_hex(value)
         if type(value) == int:
             data4bytes = value
         frame = self.lcan.GenerateDataFrame(FrameType.SetRegisterCommandFrame, registerAddress, index, 0x00, data4bytes)
