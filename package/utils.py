@@ -151,10 +151,9 @@ class PolarizationDiagnosticsUnit:
         
     def set_angle(self, angle):
         pos = angle * ((2 ** self.step_mode) * 200.0 * self.reduction) / 360.0
+        current_angle = (pos / (2 ** self.step_mode) / 200 / self.reduction * 360.0) % 360.0
 
         target = round(pos + (angle - current_angle) / 360.0 * self.reduction * 200 * (2**self.step_mode))
-        
-        print('current angle', current_angle, 'current steps', pos, 'target steps', target)
         
         self.mb.set_register(self.mb.reg_dict['GoTo'][1], self.motor_index, target)
 
